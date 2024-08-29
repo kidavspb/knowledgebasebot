@@ -45,12 +45,14 @@ def delete_member(message):
 
 @bot.message_handler(commands=['show_members'], func=lambda message: message.from_user.id in admins)
 def show_members(message):
-    text = "*Список пользователей:*\n\n"
+    text = "<b>Список пользователей:</b>\n\n"
     for member_id, member_username in current_users_manager.get_data().items():
-        text += f"{member_id}:{member_username}\n"
+        text += f"{member_id}:@{member_username}\n"
 
-    text += "\nИ ожидают добавления:\n"
-    for member_username, _ in new_users_manager.get_data().items():
-        text += f"@{member_username}\n"
-    bot.send_message(message.from_user.id, text, parse_mode="MarkdownV2")
+    if len(new_users_manager.get_data().items()):
+        text += "\nОжидают добавления:\n"
+        for member_username, _ in new_users_manager.get_data().items():
+            text += f"@{member_username}\n"
+
+    bot.send_message(message.from_user.id, text, parse_mode="HTML")
     logging.info(f"Sent users list to user @{message.from_user.username}")
